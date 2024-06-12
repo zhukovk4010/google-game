@@ -2,6 +2,6 @@ import {AppComponent} from "./components/App.component.js";
 
 const rootElement = document.getElementById('root');
 
-const appElement = AppComponent();
+const appComponent = AppComponent();
 
-rootElement.append(appElement);
+rootElement.append(appComponent.element);

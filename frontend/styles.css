@@ -1,0 +1,11 @@
+.result-panel {
+    border: 1px solid #1f1f1f;
+    padding: 0.5rem;
+}
+
+.grid td {
+    border: 1px solid #1f1f1f;
+    padding: 0.5rem;
+    width: 4rem;
+    height: 4rem;
+}

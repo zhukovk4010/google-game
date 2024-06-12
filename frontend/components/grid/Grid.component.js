@@ -1,7 +1,28 @@
+import {getGridSize} from "../../../core/state-manager.js";
+import {CellComponent} from "./cell/Cell.component.js";
+
 export function GridComponent() {
     const element = document.createElement('div');
 
-    element.append(`Grid will be here`);
+    element.classList.add('grid')
 
-    return element;
+    render(element);
+
+    return {element};
+}
+
+async function render(element) {
+
+    const gridSize = await getGridSize();
+
+    for (let x = 0; x < gridSize.rowsCount; x++) {
+        const rowElement = document.createElement('tr');
+
+        for (let y = 0; y < gridSize.columnCount; y++) {
+            const cellComponent = CellComponent(x, y);
+            rowElement.append(cellComponent.element);
+        }
+
+        element.append(rowElement)
+    }
 }
