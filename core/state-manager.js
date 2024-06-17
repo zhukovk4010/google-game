@@ -1,7 +1,7 @@
 import {GAME_STATES} from './constans.js'
 
 const _state = {
-    gameStatus: GAME_STATES.IN_PROGRESS,
+    gameStatus: GAME_STATES.SETTINGS,
     points: {
         google: 0,
         players: [0, 0]
@@ -95,19 +95,34 @@ function _jumpGoogleToNewPosition() {
 
 let googleJumpInterval;
 
-googleJumpInterval = setInterval(() => {
-    _jumpGoogleToNewPosition();
-    _state.points.google++;
 
-    if (_state.points.google === _state.settings.pointsToLose) {
-        clearInterval(googleJumpInterval);
-        _state.gameStatus = GAME_STATES.LOSE;
-    }
-
-    _notifyObservers();
-}, _state.settings.googleJumpInterval);
 
 //Interface
+
+export async function start(){
+    _state.gameStatus = GAME_STATES.IN_PROGRESS;
+    _state.positions.players[0] = {x: 0, y: 0};
+    _state.positions.players[1] = {
+        x: _state.settings.gridSize.columnCount - 1,
+        y: _state.settings.gridSize.rowsCount - 1
+    };
+    _jumpGoogleToNewPosition();
+
+
+    googleJumpInterval = setInterval(() => {
+        _jumpGoogleToNewPosition();
+        _state.points.google++;
+
+        if (_state.points.google === _state.settings.pointsToLose) {
+            clearInterval(googleJumpInterval);
+            _state.gameStatus = GAME_STATES.LOSE;
+        }
+
+        _notifyObservers();
+    }, _state.settings.googleJumpInterval);
+
+    _notifyObservers();
+}
 
 function _getIndexByPlayerNumber(playerNumber) {
     const playerIndex = playerNumber -1;
