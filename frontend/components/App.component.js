@@ -2,21 +2,36 @@ import {SettingsComponent} from "./settings/Settings.component.js";
 import {ResultPanelComponent} from "./result-panel/ResultPanel.component.js";
 import {GridComponent} from "./grid/Grid.component.js";
 import {LoseComponent} from "./lose-component/Lose.component.js";
-import {getGameStatus} from "../../core/state-manager.js";
+import {getGameStatus, subscribe} from "../../core/state-manager.js";
 import {GAME_STATES} from '../../core/constans.js'
 import {StartComponent} from "./start-component/Start.component.js";
 
 export function AppComponent() {
+    const localState = {
+        prevGameStatus: null
+    }
+
     const element = document.createElement('div');
 
-    render(element);
+    subscribe(() => {
+        render(element, localState);
+    })
+
+    render(element, localState);
 
     return {element};
 }
 
-async function render(element) {
+async function render(element, localState) {
 
     const gameStatus = await getGameStatus();
+
+    if (localState.prevGameStatus === gameStatus) return;
+    localState.prevGameStatus = gameStatus;
+
+    console.log('render');
+
+    element.innerHTML = '';
 
     switch (gameStatus) {
         case GAME_STATES.SETTINGS: {
