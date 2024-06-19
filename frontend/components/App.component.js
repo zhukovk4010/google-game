@@ -8,7 +8,8 @@ import {StartComponent} from "./start-component/Start.component.js";
 
 export function AppComponent() {
     const localState = {
-        prevGameStatus: null
+        prevGameStatus: null,
+        cleanupFunctions: []
     }
 
     const element = document.createElement('div');
@@ -29,7 +30,8 @@ async function render(element, localState) {
     if (localState.prevGameStatus === gameStatus) return;
     localState.prevGameStatus = gameStatus;
 
-    console.log('render');
+    localState.cleanupFunctions.forEach(cf => cf());
+    localState.cleanupFunctions = [];
 
     element.innerHTML = '';
 
@@ -44,6 +46,8 @@ async function render(element, localState) {
             const settingsComponent = SettingsComponent();
             const resultPanelComponent = ResultPanelComponent();
             const gridComponent = GridComponent();
+
+            localState.cleanupFunctions.push(gridComponent.cleanup);
 
             element.append(settingsComponent.element, resultPanelComponent.element, gridComponent.element);
             break;

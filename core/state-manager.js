@@ -105,6 +105,9 @@ let googleJumpInterval;
 //Interface
 
 export async function start(){
+    if (_state.gameStatus !== GAME_STATES.SETTINGS) {
+        throw new Error(`Incorrect transition from "${_state.gameStatus}" to "${GAME_STATES.IN_PROGRESS}"`)
+    }
 
     _state.positions.players[0] = {x: 0, y: 0};
     _state.positions.players[1] = {
