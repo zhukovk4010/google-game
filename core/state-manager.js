@@ -48,6 +48,11 @@ export function unsubscribe(observer) {
     _observers = _observers.filter(o => o !== observer);
 }
 
+export function playAgain() {
+    _state.gameStatus = GAME_STATES.SETTINGS;
+    _notifyObservers();
+}
+
 function _notifyObservers() {
     _observers.forEach((o) => {
         try {
@@ -100,13 +105,16 @@ let googleJumpInterval;
 //Interface
 
 export async function start(){
-    _state.gameStatus = GAME_STATES.IN_PROGRESS;
+
     _state.positions.players[0] = {x: 0, y: 0};
     _state.positions.players[1] = {
         x: _state.settings.gridSize.columnCount - 1,
         y: _state.settings.gridSize.rowsCount - 1
     };
     _jumpGoogleToNewPosition();
+
+    _state.points.google = 0;
+    _state.points.players = [0, 0];
 
 
     googleJumpInterval = setInterval(() => {
@@ -121,6 +129,7 @@ export async function start(){
         _notifyObservers();
     }, _state.settings.googleJumpInterval);
 
+    _state.gameStatus = GAME_STATES.IN_PROGRESS;
     _notifyObservers();
 }
 
