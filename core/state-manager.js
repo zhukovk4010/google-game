@@ -1,4 +1,4 @@
-import {GAME_STATES} from './constans.js'
+import {EVENTS, GAME_STATES} from './constans.js'
 
 const _state = {
     gameStatus: GAME_STATES.SETTINGS,
@@ -50,13 +50,23 @@ export function unsubscribe(observer) {
 
 export function playAgain() {
     _state.gameStatus = GAME_STATES.SETTINGS;
-    _notifyObservers();
+    _notifyObservers(EVENTS.STATUS_CHANGED, '');
 }
 
-function _notifyObservers() {
+/**
+ * @param {string} name - action name
+ * @param {Object, string} payload - data
+ * */
+function _notifyObservers(name, payload) {
+
+    const event = {
+        name,
+        payload
+    }
+
     _observers.forEach((o) => {
         try {
-            o();
+            o(event);
         } catch (err) {
             console.error(err);
         }
@@ -100,8 +110,6 @@ function _jumpGoogleToNewPosition() {
 
 let googleJumpInterval;
 
-
-
 //Interface
 
 export async function start(){
@@ -120,20 +128,28 @@ export async function start(){
     _state.points.players = [0, 0];
 
 
+
     googleJumpInterval = setInterval(() => {
+        const prevPosition = {..._state.positions.google}
         _jumpGoogleToNewPosition();
+        _notifyObservers(EVENTS.GOOGLE_JUMPED, {
+            prevPosition: prevPosition,
+            newPosition: {..._state.positions.google}
+        });
+
         _state.points.google++;
+        _notifyObservers(EVENTS.SCORES_CHANGED, '');
 
         if (_state.points.google === _state.settings.pointsToLose) {
             clearInterval(googleJumpInterval);
             _state.gameStatus = GAME_STATES.LOSE;
+            _notifyObservers(EVENTS.STATUS_CHANGED, '');
         }
 
-        _notifyObservers();
     }, _state.settings.googleJumpInterval);
 
     _state.gameStatus = GAME_STATES.IN_PROGRESS;
-    _notifyObservers();
+    _notifyObservers(EVENTS.STATUS_CHANGED, '');
 }
 
 function _getIndexByPlayerNumber(playerNumber) {
