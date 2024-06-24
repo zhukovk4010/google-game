@@ -85,7 +85,7 @@ function _jumpGoogleToNewPosition() {
 }
 
 function _checkGooglePosition(newPosition) {
-    return newPosition.x === _state.positions.google.x && newPosition.y === _state.positions.google.y;
+    return newPosition.y === _state.positions.google.x && newPosition.x === _state.positions.google.y;
 }
 
 function _checkPlayer1Position(newPosition) {
@@ -106,6 +106,8 @@ function _catchGoogle(playerNumber) {
 
     _state.points.players[playerIndex]++;
     _notifyObservers(EVENTS.SCORES_CHANGED, '');
+
+    _jumpGoogleToNewPosition();
 
     if (_state.points[playerIndex] === _state.settings.pointsToWin) {
         _state.gameStatus = GAME_STATES.WIN;
@@ -169,21 +171,21 @@ export async function movePlayer(playerNumber, direction) {
     }
 
     const playerIndex = _getIndexByPlayerNumber(playerNumber);
-    const oldPosition = {..._state.positions.players[playerIndex]};
+    const prevPosition = {..._state.positions.players[playerIndex]};
     const newPosition = {..._state.positions.players[playerIndex]};
 
     switch (direction) {
         case MOVING_DIRECTIONS.UP:
-            newPosition.y--;
+            newPosition.x -= 1;
             break;
         case MOVING_DIRECTIONS.DOWN:
-            newPosition.y++;
+            newPosition.x += 1;
             break;
         case MOVING_DIRECTIONS.LEFT:
-            newPosition.x--;
+            newPosition.y -= 1;
             break;
         case MOVING_DIRECTIONS.RIGHT:
-            newPosition.x++;
+            newPosition.y += 1;
             break;
     }
 
@@ -203,7 +205,7 @@ export async function movePlayer(playerNumber, direction) {
 
     _state.positions.players[playerIndex] = newPosition;
     _notifyObservers(EVENTS[`PLAYER${playerNumber}_MOVED`], {
-        oldPosition: oldPosition,
+        prevPosition: prevPosition,
         newPosition: newPosition
     });
 }
